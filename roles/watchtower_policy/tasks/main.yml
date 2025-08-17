@@ -3,7 +3,7 @@
 
 - name: Ensure watchtower config directory exists
   file:
-    path: "/home/{{ main_user }}/docker/watchtower"
+    path: "{{ mediastack_root }}/watchtower"
     state: directory
     owner: "{{ main_user }}"
     group: "{{ main_group }}"
@@ -12,7 +12,7 @@
 - name: Render watchtower env file
   template:
     src: watchtower.env.j2
-    dest: "/home/{{ main_user }}/docker/watchtower/watchtower.env"
+    dest: "{{ mediastack_root }}/watchtower/watchtower.env"
     owner: "{{ main_user }}"
     group: "{{ main_group }}"
     mode: '0644'

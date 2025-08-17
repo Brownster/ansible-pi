@@ -5,7 +5,9 @@ for a media stack. The playbooks now cover system preparation, mounting of
 storage/download/backup drives, creation of the required folder structure, Docker
 deployment, controlled container updates, automated backups, monitoring exporters,
 optional Tailscale connectivity, Samba shares, and
-app-specific extras.
+app-specific extras. Docker configuration lives under `/opt/mediastack`
+(overridable via the `mediastack_root` variable) to keep the stack
+self-contained.
 
 ## Repository layout
 
@@ -74,7 +76,7 @@ application deployment tasks.
 The backup role installs `/usr/local/bin/backup_docker.sh` and a systemd timer
 (`docker-backup.timer`) that archives Docker configuration and manifests under
 `/mnt/backups/<hostname>/YYYYMMDD`. The latest snapshot is mirrored to
-`/home/holly/docker/backups` for consumption by the web UI.
+`/opt/mediastack/backups` for consumption by the web UI.
 
 Key variables in `inventory/group_vars/all.yml`:
 
@@ -82,9 +84,10 @@ Key variables in `inventory/group_vars/all.yml`:
 - `backup_keep_daily` / `backup_keep_weekly` – retention policy
 - `backup_timer_on_calendar` – systemd time specification
 - `watchtower_schedule` – when Watchtower checks for image updates
+- `mediastack_root` – base directory holding Docker configs and compose files
 
 To restore a backup, copy the desired dated folder back to
-`/home/holly/docker` and run `docker compose up -d`.
+`/opt/mediastack` and run `docker compose up -d`.
 
 The monitoring role exposes host metrics via `node_exporter` on port 9100 and
 container metrics via `cAdvisor` on port 8082.
