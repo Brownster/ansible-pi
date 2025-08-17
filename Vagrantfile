@@ -13,6 +13,8 @@ Vagrant.configure("2") do |config|
     ansible.playbook = "playbooks/site.yml"
     ansible.inventory_path = "inventory/vagrant.yml"
     ansible.extra_vars = {
+      enable_mounts: false,
+      enable_backup_mount: false,
       # Add any extra variables you need for testing here
       # For example, you might want to disable certain tasks
       # that are specific to the Raspberry Pi hardware.

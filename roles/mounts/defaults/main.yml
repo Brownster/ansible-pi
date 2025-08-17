@@ -1,0 +1,3 @@
+---
+# Whether to configure storage and downloads mounts
+enable_mounts: true
