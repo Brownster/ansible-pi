@@ -1,0 +1,38 @@
+---
+# Configure storage and downloads mounts via fstab and ensure they are mounted
+
+- name: Compute mount options for storage based on FS
+  set_fact:
+    storage_mount_opts: >-
+      {{ mount_opts_ntfs if storage_fs == 'ntfs-3g' else mount_opts_ext4 }}
+
+- name: Compute mount options for downloads based on FS
+  set_fact:
+    downloads_mount_opts: >-
+      {{ mount_opts_ntfs if downloads_fs == 'ntfs-3g' else mount_opts_ext4 }}
+
+- name: Ensure storage is in fstab and mounted
+  mount:
+    src: "UUID={{ storage_device_uuid }}"
+    path: "{{ storage_mount_point }}"
+    fstype: "{{ storage_fs }}"
+    opts: "{{ storage_mount_opts }}"
+    state: mounted
+
+- name: Ensure downloads is in fstab and mounted
+  mount:
+    src: "UUID={{ downloads_device_uuid }}"
+    path: "{{ downloads_mount_point }}"
+    fstype: "{{ downloads_fs }}"
+    opts: "{{ downloads_mount_opts }}"
+    state: mounted
+
+- name: Stat storage root
+  stat:
+    path: "{{ storage_mount_point }}"
+  register: storage_stat
+
+- name: Fail if storage not mounted
+  fail:
+    msg: "Storage mount {{ storage_mount_point }} not available"
+  when: not storage_stat.stat.exists
