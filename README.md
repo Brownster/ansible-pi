@@ -81,6 +81,41 @@ The Docker images and ports for all services are defined as variables in `invent
     ansible-playbook -i inventory/hosts.yml playbooks/site.yml --ask-become-pass --ask-vault-pass
     ```
 
+## Local Testing with Vagrant
+
+Instead of testing on a physical Raspberry Pi, you can use Vagrant to create a local virtual machine that mimics your Pi's environment. This is a much faster and more convenient way to test your Ansible playbook.
+
+### Requirements
+
+*   [Vagrant](https://www.vagrantup.com/downloads)
+*   [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+
+### Usage
+
+1.  **Start the test environment:**
+
+    ```bash
+    vagrant up
+    ```
+
+    This command will download a Debian image, create a virtual machine, and run the Ansible playbook against it.
+
+2.  **Re-run the playbook:**
+
+    ```bash
+    vagrant provision
+    ```
+
+    If you make changes to your playbook, you can re-run it against the existing virtual machine with this command.
+
+3.  **Destroy the test environment:**
+
+    ```bash
+    vagrant destroy
+    ```
+
+    When you're done testing, you can destroy the virtual machine to free up resources.
+
 ## Roles
 
 This project is organized into the following Ansible roles:
