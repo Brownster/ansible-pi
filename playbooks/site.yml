@@ -8,3 +8,5 @@
     - role: system_prep
     - role: mounts
     - role: folders
+    - role: docker_engine
+    - role: compose_deploy
