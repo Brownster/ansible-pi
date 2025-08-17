@@ -65,11 +65,14 @@ The Docker images and ports for all services are defined as variables in `invent
 
 2.  **Configure your inventory:**
 
-    *   Edit `inventory/hosts.yml` to add the IP address or hostname of your Raspberry Pi.
+    *   For physical Raspberry Pis, edit `inventory/hosts.yml` to add the device's IP address or hostname.
+    *   For local Vagrant testing, `inventory/vagrant.yml` already defines a `default` host for the VM.
     *   Edit `inventory/group_vars/all.yml` to customize the configuration.
     *   Create and encrypt `inventory/group_vars/vault.yml` to store your secrets.
 
 3.  **Run the playbook:**
+
+    To deploy to a physical Raspberry Pi:
 
     ```bash
     ansible-playbook -i inventory/hosts.yml playbooks/site.yml --ask-become-pass
@@ -81,9 +84,13 @@ The Docker images and ports for all services are defined as variables in `invent
     ansible-playbook -i inventory/hosts.yml playbooks/site.yml --ask-become-pass --ask-vault-pass
     ```
 
+    The Vagrant setup uses `inventory/vagrant.yml` automatically when you run `vagrant up` or `vagrant provision`.
+
 ## Local Testing with Vagrant
 
 Instead of testing on a physical Raspberry Pi, you can use Vagrant to create a local virtual machine that mimics your Pi's environment. This is a much faster and more convenient way to test your Ansible playbook.
+
+The provided `Vagrantfile` points to `inventory/vagrant.yml`, which contains a `default` host definition for the virtual machine.
 
 ### Requirements
 

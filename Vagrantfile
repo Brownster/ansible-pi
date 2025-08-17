@@ -11,7 +11,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "playbooks/site.yml"
-    ansible.inventory_path = "inventory/hosts.yml"
+    ansible.inventory_path = "inventory/vagrant.yml"
     ansible.extra_vars = {
       # Add any extra variables you need for testing here
       # For example, you might want to disable certain tasks
