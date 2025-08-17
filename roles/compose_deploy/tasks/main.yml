@@ -1,0 +1,62 @@
+---
+# Deploy the media stack using Docker Compose and Gluetun VPN
+
+- name: Ensure docker config root exists
+  file:
+    path: "/home/{{ main_user }}/docker"
+    state: directory
+    owner: "{{ main_user }}"
+    group: "{{ main_group }}"
+    mode: '0775'
+
+- name: Ensure VPN env directory exists
+  file:
+    path: "{{ vpn_env_dir }}"
+    state: directory
+    owner: "{{ main_user }}"
+    group: "{{ main_group }}"
+    mode: '0770'
+
+- name: Render Gluetun env file
+  template:
+    src: gluetun.env.j2
+    dest: "{{ vpn_env_file }}"
+    owner: "{{ main_user }}"
+    group: "{{ main_group }}"
+    mode: '0600'
+
+- name: Render docker-compose.yml
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ compose_dst }}"
+    owner: "{{ main_user }}"
+    group: "{{ main_group }}"
+    mode: '0644'
+
+- name: Ensure vpn_network exists
+  community.docker.docker_network:
+    name: vpn_network
+    driver: bridge
+
+- name: Bring up stack with Docker Compose
+  community.docker.docker_compose:
+    project_src: "/home/{{ main_user }}/docker"
+    files:
+      - "{{ compose_dst }}"
+    state: present
+  register: compose_result
+
+- name: Check vpn container health
+  community.docker.docker_container_info:
+    name: vpn
+  register: vpn_info
+  retries: 5
+  delay: 15
+  until: vpn_info.containers and vpn_info.containers[0].State.Health.Status == 'healthy'
+
+- name: Assert vpn container is healthy
+  assert:
+    that:
+      - vpn_info.containers | length > 0
+      - vpn_info.containers[0].State.Health.Status == 'healthy'
+    fail_msg: "Gluetun vpn container is not healthy. Check credentials or connectivity."

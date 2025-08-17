@@ -1,0 +1,54 @@
+---
+# Install Docker Engine and Compose plugin on Debian Bookworm arm64
+
+- name: Install Docker prerequisites
+  apt:
+    name:
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+    state: present
+    update_cache: true
+
+- name: Ensure keyring directory exists
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Add Docker GPG key
+  get_url:
+    url: https://download.docker.com/linux/debian/gpg
+    dest: /etc/apt/keyrings/docker.asc
+    mode: '0644'
+
+- name: Add Docker apt repository
+  apt_repository:
+    repo: >-
+      deb [arch=arm64 signed-by=/etc/apt/keyrings/docker.asc]
+      https://download.docker.com/linux/debian bookworm stable
+    filename: docker
+    state: present
+
+- name: Install Docker Engine and Compose plugin
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-compose-plugin
+    state: present
+    update_cache: true
+
+- name: Ensure user is in docker group
+  user:
+    name: "{{ main_user }}"
+    groups: docker
+    append: true
+
+- name: Enable and start Docker
+  service:
+    name: docker
+    enabled: true
+    state: started

@@ -1,0 +1,4 @@
+---
+compose_dst: "/home/{{ main_user }}/docker/docker-compose.yml"
+vpn_env_dir: "/home/{{ main_user }}/docker/vpn"
+vpn_env_file: "{{ vpn_env_dir }}/.env"
