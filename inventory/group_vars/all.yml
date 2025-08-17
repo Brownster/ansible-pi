@@ -72,3 +72,20 @@ mount_map:
         ensure: true
       - path: "/mnt/storage/audiobooks"
         ensure: true
+
+# Backups
+backups_device_uuid: "UUID-OF-BACKUPS-DRIVE"
+backups_mount_point: "/mnt/backups"
+backups_fs: auto
+backup_keep_daily: 7
+backup_keep_weekly: 4
+backup_mirror_dir: "/home/{{ main_user }}/docker/backups"
+backup_healthcheck_url: ""
+backup_timer_on_calendar: "daily"
+
+# Watchtower
+watchtower_schedule: "0 4 * * *"
+# watchtower_notification_url: ""
+
+# Monitoring
+cadvisor_port: 8082

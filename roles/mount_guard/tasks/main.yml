@@ -1,5 +1,5 @@
 ---
-# Ensure Docker waits for storage and downloads mounts before starting
+# Ensure Docker waits for storage, downloads and backups mounts before starting
 
 - name: Ensure docker.service drop-in directory exists
   file:
@@ -13,7 +13,7 @@
     content: |
       [Unit]
       # Ensure media mounts exist before docker starts/restores containers
-      RequiresMountsFor={{ storage_mount_point }} {{ downloads_mount_point }}
+      RequiresMountsFor={{ storage_mount_point }} {{ downloads_mount_point }}{% if backups_mount_point is defined %} {{ backups_mount_point }}{% endif %}
       After=remote-fs.target
     owner: root
     group: root

@@ -1,0 +1,28 @@
+---
+# Prepare backup artifacts for the web UI
+
+- name: Ensure backup mirror directory exists
+  file:
+    path: "{{ backup_mirror_dir }}"
+    state: directory
+    owner: "{{ main_user }}"
+    group: "{{ main_group }}"
+    mode: '0755'
+
+- name: Ensure placeholder backup_status.json exists
+  copy:
+    dest: "{{ backup_mirror_dir }}/backup_status.json"
+    content: '{"last_backup": null}'
+    owner: "{{ main_user }}"
+    group: "{{ main_group }}"
+    mode: '0644'
+    force: no
+
+- name: Ensure placeholder services.json exists
+  copy:
+    dest: "{{ backup_mirror_dir }}/services.json"
+    content: '{}'
+    owner: "{{ main_user }}"
+    group: "{{ main_group }}"
+    mode: '0644'
+    force: no
