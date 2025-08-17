@@ -12,7 +12,7 @@ services:
     devices:
       - /dev/net/tun:/dev/net/tun
     volumes:
-      - "/home/{{ main_user }}/docker/vpn:/gluetun"
+      - "{{ mediastack_root }}/vpn:/gluetun"
     env_file:
       - {{ vpn_env_file }}
     healthcheck:
@@ -43,7 +43,7 @@ services:
       - PGID={{ pgid }}
       - TZ={{ timezone }}
     volumes:
-      - /home/{{ main_user }}/docker/requestrr/config:/config
+      - {{ mediastack_root }}/requestrr/config:/config
     restart: unless-stopped
     ports:
       - 4545:4545
@@ -58,7 +58,7 @@ services:
       - PUID={{ puid }}
       - PGID={{ pgid }}
     volumes:
-      - /home/{{ main_user }}/docker/jackett:/config
+      - {{ mediastack_root }}/jackett:/config
       - /mnt/downloads:/downloads/completed/
     restart: unless-stopped
 
@@ -72,7 +72,7 @@ services:
       - PUID={{ puid }}
       - PGID={{ pgid }}
     volumes:
-      - /home/{{ main_user }}/docker/sonarr:/config
+      - {{ mediastack_root }}/sonarr:/config
       - /mnt/storage/TV:/tv
       - /mnt/downloads:/downloads
       - /mnt/downloads/completed/transmission/iplayar:/downloads/iplayar
@@ -88,7 +88,7 @@ services:
       - PUID={{ puid }}
       - PGID={{ pgid }}
     volumes:
-      - /home/{{ main_user }}/docker/radarr:/config
+      - {{ mediastack_root }}/radarr:/config
       - /mnt/storage/Movies:/movies
       - /mnt/downloads:/downloads
     restart: unless-stopped
@@ -103,7 +103,7 @@ services:
       - PUID={{ puid }}
       - PGID={{ pgid }}
     volumes:
-      - /home/{{ main_user }}/docker/lidarr/config:/config
+      - {{ mediastack_root }}/lidarr/config:/config
       - /mnt/storage/music:/music
       - /mnt/downloads:/downloads
     restart: unless-stopped
@@ -118,7 +118,7 @@ services:
       - PUID={{ puid }}
       - PGID={{ pgid }}
     volumes:
-      - /home/{{ main_user }}/docker/transmission:/config
+      - {{ mediastack_root }}/transmission:/config
       - /mnt/downloads:/downloads
     restart: unless-stopped
 
@@ -132,7 +132,7 @@ services:
       - PUID={{ puid }}
       - PGID={{ pgid }}
     volumes:
-      - /home/{{ main_user }}/docker/rdtclient:/data/db
+      - {{ mediastack_root }}/rdtclient:/data/db
       - /mnt/downloads:/downloads
     logging:
       driver: json-file
@@ -150,7 +150,7 @@ services:
       - PGID={{ pgid }}
       - TZ={{ timezone }}
     volumes:
-      - /home/{{ main_user }}/docker/sabnzbd/config:/config
+      - {{ mediastack_root }}/sabnzbd/config:/config
       - /mnt/downloads/sabdnzbd.incomplete:/incomplete-downloads
       - /mnt/downloads:/downloads
     restart: unless-stopped
@@ -167,7 +167,7 @@ services:
       - INCLUDERADIO=false
       - ENABLEIMPORT=true
     volumes:
-      - /home/{{ main_user }}/docker/get_iplayer/config:/config
+      - {{ mediastack_root }}/get_iplayer/config:/config
       - /mnt/downloads/getiplayer:/downloads/incomplete
       - /mnt/downloads/completed/transmission/iplayar:/downloads/iplayar
     ports:
@@ -184,7 +184,7 @@ services:
       - PUID={{ puid }}
       - PGID={{ pgid }}
     volumes:
-      - /home/{{ main_user }}/docker/lazylibrarian:/config
+      - {{ mediastack_root }}/lazylibrarian:/config
       - /mnt/storage/books:/books
       - /mnt/storage/audiobooks:/audiobooks
       - /mnt/downloads/transmission/books:/downloads
@@ -202,8 +202,8 @@ services:
     volumes:
       - /mnt/storage/audiobooks:/audiobooks
       - /mnt/storage/podcasts:/podcasts
-      - /home/{{ main_user }}/docker/audiobookshelf/config:/config
-      - /home/{{ main_user }}/docker/audiobookshelf/metadata:/metadata
+      - {{ mediastack_root }}/audiobookshelf/config:/config
+      - {{ mediastack_root }}/audiobookshelf/metadata:/metadata
     environment:
       - TZ={{ timezone }}
       - PUID={{ puid }}
@@ -221,7 +221,7 @@ services:
       - ND_LASTFM_APIKEY=450e8b940228b549b766270f90d67740
       - ND_LASTFM_SECRET=113f77e069b7e9e5d93f66d3e72aa0a2
     volumes:
-      - /home/{{ main_user }}/docker/navidrome:/data
+      - {{ mediastack_root }}/navidrome:/data
       - /mnt/storage/music:/music:ro
     ports:
       - "4533:4533"
@@ -237,7 +237,7 @@ services:
       - PUID={{ puid }}
       - PGID={{ pgid }}
     volumes:
-      - /home/{{ main_user }}/docker/jellyfin:/config
+      - {{ mediastack_root }}/jellyfin:/config
       - /mnt/storage/:/media
     ports:
       - 8096:8096
@@ -261,7 +261,7 @@ services:
       - /proc:/host_proc:ro
       - /sys:/host_sys:ro
       - /var/run/docker.sock:/var/run/docker.sock
-      - /home/{{ main_user }}/docker/:/config
+      - {{ mediastack_root }}/:/config
       - /mnt/storage:/mnt/storage
       - /mnt/downloads:/mnt/downloads
     restart: unless-stopped
@@ -272,7 +272,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     env_file:
-      - /home/{{ main_user }}/docker/watchtower/watchtower.env
+      - {{ mediastack_root }}/watchtower/watchtower.env
     restart: unless-stopped
 
 networks:

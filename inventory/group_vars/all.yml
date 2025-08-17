@@ -38,6 +38,9 @@ downloads_dirs:
   - incomplete
   - getiplayer
 
+# Root directory for all Docker configs and compose files
+mediastack_root: "/opt/mediastack"
+
 # Optional hostname configuration
 set_hostname: false
 hostname_value: "pi-media"
@@ -79,7 +82,7 @@ backups_mount_point: "/mnt/backups"
 backups_fs: auto
 backup_keep_daily: 7
 backup_keep_weekly: 4
-backup_mirror_dir: "/home/{{ main_user }}/docker/backups"
+backup_mirror_dir: "{{ mediastack_root }}/backups"
 backup_healthcheck_url: ""
 backup_timer_on_calendar: "daily"
 

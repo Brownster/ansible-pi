@@ -1,4 +1,4 @@
 ---
-compose_dst: "/home/{{ main_user }}/docker/docker-compose.yml"
-vpn_env_dir: "/home/{{ main_user }}/docker/vpn"
+compose_dst: "{{ mediastack_root }}/docker-compose.yml"
+vpn_env_dir: "{{ mediastack_root }}/vpn"
 vpn_env_file: "{{ vpn_env_dir }}/.env"

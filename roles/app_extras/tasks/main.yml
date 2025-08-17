@@ -3,7 +3,7 @@
 
 - name: Ensure get_iplayer config directory exists
   file:
-    path: "/home/{{ main_user }}/docker/get_iplayer/config"
+    path: "{{ mediastack_root }}/get_iplayer/config"
     state: directory
     owner: "{{ main_user }}"
     group: "{{ main_group }}"
@@ -12,7 +12,7 @@
 - name: Render get_iplayer config.json
   template:
     src: get_iplayer.config.json.j2
-    dest: "/home/{{ main_user }}/docker/get_iplayer/config/config.json"
+    dest: "{{ mediastack_root }}/get_iplayer/config/config.json"
     owner: "{{ main_user }}"
     group: "{{ main_group }}"
     mode: '0600'
@@ -24,5 +24,5 @@
     hour: 3
     minute: 15
     user: "{{ main_user }}"
-    job: "/home/{{ main_user }}/docker/pi-health/backup.sh >/dev/null 2>&1"
+    job: "{{ mediastack_root }}/pi-health/backup.sh >/dev/null 2>&1"
     state: absent

@@ -3,7 +3,7 @@
 
 - name: Ensure docker config root exists
   file:
-    path: "/home/{{ main_user }}/docker"
+    path: "{{ mediastack_root }}"
     state: directory
     owner: "{{ main_user }}"
     group: "{{ main_group }}"
@@ -40,7 +40,7 @@
 
 - name: Bring up stack with Docker Compose
   community.docker.docker_compose:
-    project_src: "/home/{{ main_user }}/docker"
+    project_src: "{{ mediastack_root }}"
     files:
       - "{{ compose_dst }}"
     state: present
