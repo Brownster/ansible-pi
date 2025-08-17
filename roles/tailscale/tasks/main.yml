@@ -1,0 +1,41 @@
+---
+# Install and configure Tailscale
+
+- name: Install prerequisites
+  apt:
+    name:
+      - curl
+      - gnupg
+    state: present
+    update_cache: true
+
+- name: Add Tailscale apt repo GPG key
+  get_url:
+    url: https://pkgs.tailscale.com/stable/debian/bookworm.noarmor.gpg
+    dest: /usr/share/keyrings/tailscale-archive-keyring.gpg
+    mode: '0644'
+
+- name: Add Tailscale apt repository
+  apt_repository:
+    repo: >-
+      deb [signed-by=/usr/share/keyrings/tailscale-archive-keyring.gpg]
+      https://pkgs.tailscale.com/stable/debian bookworm main
+    filename: tailscale
+    state: present
+
+- name: Install tailscale
+  apt:
+    name: tailscale
+    state: present
+    update_cache: true
+
+- name: Check tailscale status
+  command: tailscale status --peers
+  register: ts_status
+  changed_when: false
+  failed_when: false
+
+- name: Bring up tailscale if not connected
+  command: >-
+    tailscale up --auth-key={{ tailscale_auth_key }} {{ tailscale_extra_args | default('') }}
+  when: ts_status.rc != 0

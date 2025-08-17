@@ -1,8 +1,10 @@
 # Pi Media Stack Automation
 
 Ansible configuration for preparing Raspberry Pi 5 devices running Debian Bookworm
-for a media stack. The playbooks currently cover system preparation, mounting of
-storage/download drives, and creation of the required folder structure.
+for a media stack. The playbooks now cover system preparation, mounting of
+storage/download drives, creation of the required folder structure, Docker
+deployment, mount guards, optional Tailscale connectivity, Samba shares, and
+app-specific extras.
 
 ## Repository layout
 
@@ -19,6 +21,22 @@ roles/
     tasks/main.yml
   folders/
     tasks/main.yml
+  docker_engine/
+    tasks/main.yml
+  compose_deploy/
+    tasks/main.yml
+  mount_guard/
+    tasks/main.yml
+    handlers/main.yml
+  tailscale/
+    tasks/main.yml
+  samba_shares/
+    defaults/main.yml
+    tasks/main.yml
+    handlers/main.yml
+  app_extras/
+    tasks/main.yml
+    templates/get_iplayer.config.json.j2
 playbooks/
   site.yml
 files/

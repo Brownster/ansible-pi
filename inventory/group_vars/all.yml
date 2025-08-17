@@ -41,3 +41,34 @@ downloads_dirs:
 # Optional hostname configuration
 set_hostname: false
 hostname_value: "pi-media"
+
+# Explicit mapping of mounts and hosted folders
+mount_map:
+  - name: downloads
+    mount_point: "/mnt/downloads"
+    uuid: "{{ downloads_device_uuid }}"
+    fstype: "{{ downloads_fs }}"
+    folders:
+      - path: "/mnt/downloads"
+        ensure: true
+      - path: "/mnt/downloads/getiplayer"
+        ensure: true
+      - path: "/mnt/downloads/completed"
+        ensure: true
+  - name: storage
+    mount_point: "/mnt/storage"
+    uuid: "{{ storage_device_uuid }}"
+    fstype: "{{ storage_fs }}"
+    folders:
+      - path: "/mnt/storage/Movies"
+        ensure: true
+      - path: "/mnt/storage/TVShows"
+        ensure: true
+      - path: "/mnt/storage/music"
+        ensure: true
+      - path: "/mnt/storage/podcasts"
+        ensure: true
+      - path: "/mnt/storage/books"
+        ensure: true
+      - path: "/mnt/storage/audiobooks"
+        ensure: true

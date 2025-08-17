@@ -10,3 +10,7 @@
     - role: folders
     - role: docker_engine
     - role: compose_deploy
+    - role: mount_guard
+    - { role: tailscale, when: tailscale_auth_key is defined }
+    - role: samba_shares
+    - role: app_extras

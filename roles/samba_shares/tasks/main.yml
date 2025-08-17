@@ -1,0 +1,33 @@
+---
+# Install Samba and configure shares
+
+- name: Install Samba packages
+  apt:
+    name:
+      - samba
+      - samba-common-bin
+    state: present
+    update_cache: true
+
+- name: Add Samba shares
+  blockinfile:
+    path: /etc/samba/smb.conf
+    marker: "# {mark} ANSIBLE PI-MEDIA SHARES"
+    block: |
+      {% for s in smb_shares %}
+      [{{ s.name }}]
+      path = {{ s.path }}
+      browseable = yes
+      read only = no
+      guest ok = yes
+      create mask = 0664
+      directory mask = 0775
+
+      {% endfor %}
+  notify: restart smbd
+
+- name: Ensure smbd running and enabled
+  service:
+    name: smbd
+    state: started
+    enabled: true
