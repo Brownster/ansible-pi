@@ -1,0 +1,47 @@
+---
+# Prepare the base system with common packages, user, and timezone
+
+- name: Ensure apt cache is fresh
+  apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Install base packages
+  apt:
+    name:
+      - ca-certificates
+      - curl
+      - gnupg
+      - jq
+      - git
+      - acl
+      - ntfs-3g
+      - parted
+    state: present
+
+- name: Ensure main user exists (idempotent)
+  user:
+    name: "{{ main_user }}"
+    groups: "{{ main_group }}"
+    append: true
+    state: present
+
+- name: Set system timezone
+  community.general.timezone:
+    name: "{{ timezone }}"
+
+- name: Optionally set hostname
+  when: set_hostname | bool
+  hostname:
+    name: "{{ hostname_value }}"
+
+- name: Ensure mount points exist (pre-create to control perms)
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ main_user }}"
+    group: "{{ main_group }}"
+    mode: "0775"
+  loop:
+    - "{{ storage_mount_point }}"
+    - "{{ downloads_mount_point }}"

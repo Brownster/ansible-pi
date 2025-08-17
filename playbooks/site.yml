@@ -1,0 +1,10 @@
+---
+- name: Bootstrap Pi media prerequisites
+  hosts: pis
+  become: true
+  vars_files:
+    - ../inventory/group_vars/vault.yml
+  roles:
+    - role: system_prep
+    - role: mounts
+    - role: folders

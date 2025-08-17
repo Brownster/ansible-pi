@@ -1,0 +1,75 @@
+---
+# Create media/download directory structure and Docker app directories
+
+- name: Ensure base media root exists
+  file:
+    path: "{{ media_root }}"
+    state: directory
+    owner: "{{ main_user }}"
+    group: "{{ main_group }}"
+    mode: "0775"
+
+- name: Ensure media subfolders exist
+  file:
+    path: "{{ media_root }}/{{ item }}"
+    state: directory
+    owner: "{{ main_user }}"
+    group: "{{ main_group }}"
+    mode: "0775"
+  loop: "{{ media_dirs }}"
+
+- name: Ensure downloads root exists
+  file:
+    path: "{{ downloads_root }}"
+    state: directory
+    owner: "{{ main_user }}"
+    group: "{{ main_group }}"
+    mode: "0775"
+
+- name: Ensure downloads subfolders exist
+  file:
+    path: "{{ downloads_root }}/{{ item }}"
+    state: directory
+    owner: "{{ main_user }}"
+    group: "{{ main_group }}"
+    mode: "0775"
+  loop: "{{ downloads_dirs }}"
+
+- name: App-specific folders for dockerized services
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ main_user }}"
+    group: "{{ main_group }}"
+    mode: "0775"
+  loop:
+    - "/home/{{ main_user }}/docker/vpn"
+    - "/home/{{ main_user }}/docker/jackett"
+    - "/home/{{ main_user }}/docker/sonarr"
+    - "/home/{{ main_user }}/docker/radarr"
+    - "/home/{{ main_user }}/docker/lidarr"
+    - "/home/{{ main_user }}/docker/transmission"
+    - "/home/{{ main_user }}/docker/rdtclient"
+    - "/home/{{ main_user }}/docker/sabnzbd/config"
+    - "/home/{{ main_user }}/docker/get_iplayer/config"
+    - "/home/{{ main_user }}/docker/lazylibrarian"
+    - "/home/{{ main_user }}/docker/audiobookshelf/config"
+    - "/home/{{ main_user }}/docker/audiobookshelf/metadata"
+    - "/home/{{ main_user }}/docker/navidrome"
+    - "/home/{{ main_user }}/docker/jellyfin"
+    - "/home/{{ main_user }}/docker/pi-health"
+
+- name: Set setgid bit on media root so new files keep group
+  file:
+    path: "{{ media_root }}"
+    mode: "u=rwx,g=rwx,o=rx,g+s"
+    state: directory
+
+- name: Apply default ACL on media root for group write access
+  acl:
+    path: "{{ media_root }}"
+    default: true
+    etype: group
+    entity: "{{ main_group }}"
+    permissions: rwX
+    state: present

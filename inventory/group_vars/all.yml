@@ -1,0 +1,43 @@
+# Global variables shared across all Raspberry Pis
+# Non-sensitive defaults
+
+# System
+timezone: Europe/London
+main_user: holly
+main_group: holly
+puid: 1000
+pgid: 1000
+
+# Storage devices (use actual UUIDs for real deployments)
+storage_device_uuid: "UUID-OF-STORAGE-DRIVE"
+storage_mount_point: "/mnt/storage"
+storage_fs: auto
+
+# Downloads device
+downloads_device_uuid: "UUID-OF-DOWNLOADS-DRIVE"
+downloads_mount_point: "/mnt/downloads"
+downloads_fs: auto
+
+# Mount options
+mount_opts_ext4: "defaults,noatime"
+mount_opts_ntfs: "defaults,uid={{ puid }},gid={{ pgid }},umask=002"
+
+# Folder structure under storage/downloads
+media_root: "/mnt/storage"
+media_dirs:
+  - Movies
+  - TVShows
+  - music
+  - podcasts
+  - books
+  - audiobooks
+
+downloads_root: "/mnt/downloads"
+downloads_dirs:
+  - completed
+  - incomplete
+  - getiplayer
+
+# Optional hostname configuration
+set_hostname: false
+hostname_value: "pi-media"

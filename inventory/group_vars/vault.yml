@@ -1,0 +1,7 @@
+# TODO: encrypt this file with ansible-vault and store credentials securely.
+vpn:
+  provider: pia
+  username: "PIA_USERNAME"
+  password: "PIA_PASSWORD"
+
+tailscale_auth_key: "tskey-PLACEHOLDER"
