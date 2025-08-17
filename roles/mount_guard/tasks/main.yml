@@ -1,0 +1,23 @@
+---
+# Ensure Docker waits for storage and downloads mounts before starting
+
+- name: Ensure docker.service drop-in directory exists
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+    mode: '0755'
+
+- name: Configure docker.service mount guards
+  copy:
+    dest: /etc/systemd/system/docker.service.d/10-wait-for-mounts.conf
+    content: |
+      [Unit]
+      # Ensure media mounts exist before docker starts/restores containers
+      RequiresMountsFor={{ storage_mount_point }} {{ downloads_mount_point }}
+      After=remote-fs.target
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - systemd daemon-reload
+    - restart docker

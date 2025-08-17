@@ -1,0 +1,9 @@
+---
+# Default Samba share definitions
+smb_shares:
+  - name: Movies
+    path: "{{ media_root }}/Movies"
+  - name: TVShows
+    path: "{{ media_root }}/TVShows"
+  - name: Downloads
+    path: "{{ downloads_root }}"
