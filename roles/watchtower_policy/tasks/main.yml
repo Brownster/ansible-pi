@@ -1,0 +1,18 @@
+---
+# Configure Watchtower update policy
+
+- name: Ensure watchtower config directory exists
+  file:
+    path: "/home/{{ main_user }}/docker/watchtower"
+    state: directory
+    owner: "{{ main_user }}"
+    group: "{{ main_group }}"
+    mode: '0755'
+
+- name: Render watchtower env file
+  template:
+    src: watchtower.env.j2
+    dest: "/home/{{ main_user }}/docker/watchtower/watchtower.env"
+    owner: "{{ main_user }}"
+    group: "{{ main_group }}"
+    mode: '0644'

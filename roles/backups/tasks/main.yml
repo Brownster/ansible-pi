@@ -1,0 +1,36 @@
+---
+# Install backup script and systemd timer
+
+- name: Install Docker backup script
+  template:
+    src: backup_docker.sh.j2
+    dest: /usr/local/bin/backup_docker.sh
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Install docker-backup.service
+  template:
+    src: docker-backup.service.j2
+    dest: /etc/systemd/system/docker-backup.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Install docker-backup.timer
+  template:
+    src: docker-backup.timer.j2
+    dest: /etc/systemd/system/docker-backup.timer
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Reload systemd for backup units
+  systemd:
+    daemon_reload: true
+
+- name: Enable and start docker-backup timer
+  systemd:
+    name: docker-backup.timer
+    state: started
+    enabled: true

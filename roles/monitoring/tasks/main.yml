@@ -1,0 +1,28 @@
+---
+# Deploy node_exporter and cAdvisor for monitoring
+
+- name: Install node_exporter package
+  apt:
+    name: prometheus-node-exporter
+    state: present
+    update_cache: true
+
+- name: Ensure node_exporter service is running
+  systemd:
+    name: prometheus-node-exporter
+    state: started
+    enabled: true
+
+- name: Run cAdvisor container
+  community.docker.docker_container:
+    name: cadvisor
+    image: gcr.io/cadvisor/cadvisor:latest
+    state: started
+    restart_policy: unless-stopped
+    published_ports:
+      - "{{ cadvisor_port }}:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro

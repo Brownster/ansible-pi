@@ -1,0 +1,84 @@
+#!/bin/bash
+set -euo pipefail
+
+BACKUP_ROOT="{{ backups_mount_point }}"
+MIRROR_DIR="{{ backup_mirror_dir }}"
+HOSTNAME="$(hostname)"
+DATE="$(date +%Y%m%d)"
+DEST="$BACKUP_ROOT/$HOSTNAME/$DATE"
+MANIFEST_DIR="$DEST/manifest"
+CONFIG_SRC="/home/{{ main_user }}/docker"
+HEALTHCHECK_URL="{{ backup_healthcheck_url }}"
+KEEP_DAILY={{ backup_keep_daily }}
+KEEP_WEEKLY={{ backup_keep_weekly }}
+SERVICES_FILE="/home/{{ main_user }}/services_urls.txt"
+
+mkdir -p "$MANIFEST_DIR"
+
+# Copy docker configs excluding backups directory
+rsync -a --delete --exclude 'backups' "$CONFIG_SRC/" "$DEST/config"
+
+# Generate manifests
+mkdir -p "$MANIFEST_DIR"
+docker ps --format '{{ json . }}' > "$MANIFEST_DIR/containers.json"
+docker images --format '{{.Repository}}:{{.Tag}} {{.ID}}' > "$MANIFEST_DIR/images.txt"
+docker volume ls --quiet | xargs -r docker inspect > "$MANIFEST_DIR/volumes.json"
+
+# Mirror latest backup for web UI
+rm -rf "$MIRROR_DIR"
+mkdir -p "$(dirname "$MIRROR_DIR")"
+cp -a "$DEST" "$MIRROR_DIR"
+chown -R {{ main_user }}:{{ main_group }} "$MIRROR_DIR"
+
+# Backup status for web UI
+printf '{ "last_backup": "%s", "path": "%s" }\n' "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" "$DEST" > "$MIRROR_DIR/backup_status.json"
+
+# Convert services_urls.txt if present
+if [ -f "$SERVICES_FILE" ]; then
+  python3 <<'PY'
+import json, os
+src = os.environ['SERVICES_FILE']
+dst = os.path.join(os.environ['MIRROR_DIR'], 'services.json')
+data = {}
+with open(src) as f:
+    for line in f:
+        line=line.strip()
+        if not line:
+            continue
+        parts=line.split(None,1)
+        if len(parts)==2:
+            data[parts[0]] = parts[1]
+with open(dst,'w') as out:
+    json.dump(data,out)
+PY
+fi
+
+# Retention logic
+HOST_BACKUP_ROOT="$BACKUP_ROOT/$HOSTNAME"
+KEEP_DAILY="$KEEP_DAILY"
+KEEP_WEEKLY="$KEEP_WEEKLY"
+python3 <<'PY'
+import os, datetime, shutil, collections
+root = os.environ['HOST_BACKUP_ROOT']
+dirs = [d for d in os.listdir(root) if d.isdigit()]
+dirs.sort(reverse=True)
+keep_daily = int(os.environ['KEEP_DAILY'])
+keep_weekly = int(os.environ['KEEP_WEEKLY'])
+daily_keep = set(dirs[:keep_daily])
+weeks = collections.OrderedDict()
+for d in dirs:
+    dt = datetime.datetime.strptime(d, '%Y%m%d')
+    week_key = dt.strftime('%Y-%W')
+    if week_key not in weeks:
+        weeks[week_key] = d
+weekly_keep = set(list(weeks.values())[keep_daily:keep_daily+keep_weekly])
+keep = daily_keep | weekly_keep
+for d in dirs:
+    if d not in keep:
+        shutil.rmtree(os.path.join(root, d))
+PY
+
+# Optional healthcheck ping
+if [ -n "$HEALTHCHECK_URL" ]; then
+  curl -fsS "$HEALTHCHECK_URL" >/dev/null || true
+fi

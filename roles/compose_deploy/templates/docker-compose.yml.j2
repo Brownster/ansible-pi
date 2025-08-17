@@ -1,6 +1,10 @@
 version: "3.8"
+x-watchtower: &watchtower
+  labels:
+    - "com.centurylinklabs.watchtower.enable=true"
 services:
   vpn:
+    <<: *watchtower
     image: qmcgaw/gluetun:latest
     container_name: vpn
     cap_add:
@@ -30,6 +34,7 @@ services:
       - vpn_network
 
   requestrr:
+    <<: *watchtower
     image: thomst08/requestrr:latest
     container_name: requestrr
     network_mode: bridge
@@ -44,6 +49,7 @@ services:
       - 4545:4545
 
   jackett:
+    <<: *watchtower
     image: linuxserver/jackett:latest
     container_name: jackett
     network_mode: "service:vpn"
@@ -57,6 +63,7 @@ services:
     restart: unless-stopped
 
   sonarr:
+    <<: *watchtower
     image: linuxserver/sonarr:latest
     container_name: sonarr
     network_mode: "service:vpn"
@@ -72,6 +79,7 @@ services:
     restart: unless-stopped
 
   radarr:
+    <<: *watchtower
     image: linuxserver/radarr:latest
     container_name: radarr
     network_mode: "service:vpn"
@@ -86,6 +94,7 @@ services:
     restart: unless-stopped
 
   lidarr:
+    <<: *watchtower
     image: lscr.io/linuxserver/lidarr:latest
     container_name: lidarr
     network_mode: "service:vpn"
@@ -100,6 +109,7 @@ services:
     restart: unless-stopped
 
   transmission:
+    <<: *watchtower
     image: linuxserver/transmission:latest
     container_name: transmission
     network_mode: "service:vpn"
@@ -113,6 +123,7 @@ services:
     restart: unless-stopped
 
   rdtclient:
+    <<: *watchtower
     image: rogerfar/rdtclient
     container_name: rdtclient
     network_mode: "service:vpn"
@@ -130,6 +141,7 @@ services:
     restart: unless-stopped
 
   sabnzbd:
+    <<: *watchtower
     image: lscr.io/linuxserver/sabnzbd:latest
     container_name: sabnzbd
     network_mode: "service:vpn"
@@ -144,6 +156,7 @@ services:
     restart: unless-stopped
 
   get_iplayer:
+    <<: *watchtower
     image: ghcr.io/thespad/get_iplayer:latest
     container_name: get_iplayer
     network_mode: bridge
@@ -162,6 +175,7 @@ services:
     restart: unless-stopped
 
   lazylibrarian:
+    <<: *watchtower
     image: linuxserver/lazylibrarian:latest
     container_name: lazylibrarian
     network_mode: bridge
@@ -179,6 +193,7 @@ services:
     restart: unless-stopped
 
   audiobookshelf:
+    <<: *watchtower
     image: ghcr.io/advplyr/audiobookshelf:latest
     container_name: audiobookshelf
     network_mode: bridge
@@ -195,6 +210,7 @@ services:
       - PGID={{ pgid }}
 
   navidrome:
+    <<: *watchtower
     image: deluan/navidrome:latest
     container_name: navidrome
     network_mode: bridge
@@ -212,6 +228,7 @@ services:
     restart: unless-stopped
 
   jellyfin:
+    <<: *watchtower
     image: linuxserver/jellyfin:latest
     container_name: jellyfin
     network_mode: bridge
@@ -228,6 +245,7 @@ services:
     restart: unless-stopped
 
   pi-health-dashboard:
+    <<: *watchtower
     image: brownster/pi-health:latest
     container_name: pi-health-dashboard
     environment:
@@ -253,10 +271,8 @@ services:
     container_name: watchtower
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - WATCHTOWER_CLEANUP=true
-      - WATCHTOWER_POLL_INTERVAL=3600
-      - WATCHTOWER_INCLUDE="vpn,sonarr,radarr,pi-health-dashboard,airsonic-advanced,audiobookshelf,get_iplayer,sabnzbd,rdtclient,transmission,lidarr,navidrome"
+    env_file:
+      - /home/{{ main_user }}/docker/watchtower/watchtower.env
     restart: unless-stopped
 
 networks:

@@ -1,0 +1,33 @@
+---
+# Configure backups mount via fstab and ensure it is mounted
+
+- name: Compute mount options for backups based on FS
+  set_fact:
+    backups_mount_opts: >-
+      {{ mount_opts_ntfs if backups_fs == 'ntfs-3g' else mount_opts_ext4 }}
+
+- name: Ensure backups mount point exists
+  file:
+    path: "{{ backups_mount_point }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Ensure backups drive is in fstab and mounted
+  mount:
+    src: "UUID={{ backups_device_uuid }}"
+    path: "{{ backups_mount_point }}"
+    fstype: "{{ backups_fs }}"
+    opts: "{{ backups_mount_opts }}"
+    state: mounted
+
+- name: Stat backups mount
+  stat:
+    path: "{{ backups_mount_point }}"
+  register: backups_stat
+
+- name: Fail if backups not mounted
+  fail:
+    msg: "Backups mount {{ backups_mount_point }} not available"
+  when: not backups_stat.stat.exists
