@@ -5,7 +5,7 @@ x-watchtower: &watchtower
 services:
   vpn:
     <<: *watchtower
-    image: qmcgaw/gluetun:latest
+    image: {{ gluetun_image }}
     container_name: vpn
     cap_add:
       - NET_ADMIN
@@ -22,20 +22,20 @@ services:
       retries: 3
     restart: unless-stopped
     ports:
-      - 9117:9117
-      - 8989:8989
-      - 7878:7878
-      - 9091:9091
-      - 6789:6789
-      - 6500:6500
-      - 8686:8686
-      - 8080:8080
+      - {{ vpn_port_9117 }}:9117
+      - {{ vpn_port_8989 }}:8989
+      - {{ vpn_port_7878 }}:7878
+      - {{ vpn_port_9091 }}:9091
+      - {{ vpn_port_6789 }}:6789
+      - {{ vpn_port_6500 }}:6500
+      - {{ vpn_port_8686 }}:8686
+      - {{ vpn_port_8080 }}:8080
     networks:
       - vpn_network
 
   requestrr:
     <<: *watchtower
-    image: thomst08/requestrr:latest
+    image: {{ requestrr_image }}
     container_name: requestrr
     network_mode: bridge
     environment:
@@ -46,11 +46,11 @@ services:
       - {{ mediastack_root }}/requestrr/config:/config
     restart: unless-stopped
     ports:
-      - 4545:4545
+      - {{ requestrr_port_4545 }}:4545
 
   jackett:
     <<: *watchtower
-    image: linuxserver/jackett:latest
+    image: {{ jackett_image }}
     container_name: jackett
     network_mode: "service:vpn"
     environment:
@@ -64,7 +64,7 @@ services:
 
   sonarr:
     <<: *watchtower
-    image: linuxserver/sonarr:latest
+    image: {{ sonarr_image }}
     container_name: sonarr
     network_mode: "service:vpn"
     environment:
@@ -80,7 +80,7 @@ services:
 
   radarr:
     <<: *watchtower
-    image: linuxserver/radarr:latest
+    image: {{ radarr_image }}
     container_name: radarr
     network_mode: "service:vpn"
     environment:
@@ -95,7 +95,7 @@ services:
 
   lidarr:
     <<: *watchtower
-    image: lscr.io/linuxserver/lidarr:latest
+    image: {{ lidarr_image }}
     container_name: lidarr
     network_mode: "service:vpn"
     environment:
@@ -110,7 +110,7 @@ services:
 
   transmission:
     <<: *watchtower
-    image: linuxserver/transmission:latest
+    image: {{ transmission_image }}
     container_name: transmission
     network_mode: "service:vpn"
     environment:
@@ -124,7 +124,7 @@ services:
 
   rdtclient:
     <<: *watchtower
-    image: rogerfar/rdtclient
+    image: {{ rdtclient_image }}
     container_name: rdtclient
     network_mode: "service:vpn"
     environment:
@@ -142,7 +142,7 @@ services:
 
   sabnzbd:
     <<: *watchtower
-    image: lscr.io/linuxserver/sabnzbd:latest
+    image: {{ sabnzbd_image }}
     container_name: sabnzbd
     network_mode: "service:vpn"
     environment:
@@ -157,7 +157,7 @@ services:
 
   get_iplayer:
     <<: *watchtower
-    image: ghcr.io/thespad/get_iplayer:latest
+    image: {{ get_iplayer_image }}
     container_name: get_iplayer
     network_mode: bridge
     environment:
@@ -171,12 +171,12 @@ services:
       - /mnt/downloads/getiplayer:/downloads/incomplete
       - /mnt/downloads/completed/transmission/iplayar:/downloads/iplayar
     ports:
-      - 1935:1935
+      - {{ get_iplayer_port_1935 }}:1935
     restart: unless-stopped
 
   lazylibrarian:
     <<: *watchtower
-    image: linuxserver/lazylibrarian:latest
+    image: {{ lazylibrarian_image }}
     container_name: lazylibrarian
     network_mode: bridge
     environment:
@@ -189,16 +189,16 @@ services:
       - /mnt/storage/audiobooks:/audiobooks
       - /mnt/downloads/transmission/books:/downloads
     ports:
-      - 5299:5299
+      - {{ lazylibrarian_port_5299 }}:5299
     restart: unless-stopped
 
   audiobookshelf:
     <<: *watchtower
-    image: ghcr.io/advplyr/audiobookshelf:latest
+    image: {{ audiobookshelf_image }}
     container_name: audiobookshelf
     network_mode: bridge
     ports:
-      - 13378:80
+      - {{ audiobookshelf_port_13378 }}:80
     volumes:
       - /mnt/storage/audiobooks:/audiobooks
       - /mnt/storage/podcasts:/podcasts
@@ -211,7 +211,7 @@ services:
 
   navidrome:
     <<: *watchtower
-    image: deluan/navidrome:latest
+    image: {{ navidrome_image }}
     container_name: navidrome
     network_mode: bridge
     environment:
@@ -224,12 +224,12 @@ services:
       - {{ mediastack_root }}/navidrome:/data
       - /mnt/storage/music:/music:ro
     ports:
-      - "4533:4533"
+      - "{{ navidrome_port_4533 }}:4533"
     restart: unless-stopped
 
   jellyfin:
     <<: *watchtower
-    image: linuxserver/jellyfin:latest
+    image: {{ jellyfin_image }}
     container_name: jellyfin
     network_mode: bridge
     environment:
@@ -240,13 +240,13 @@ services:
       - {{ mediastack_root }}/jellyfin:/config
       - /mnt/storage/:/media
     ports:
-      - 8096:8096
-      - 8920:8920
+      - {{ jellyfin_port_8096 }}:8096
+      - {{ jellyfin_port_8920 }}:8920
     restart: unless-stopped
 
   pi-health-dashboard:
     <<: *watchtower
-    image: brownster/pi-health:latest
+    image: {{ pi_health_dashboard_image }}
     container_name: pi-health-dashboard
     environment:
       - TZ={{ timezone }}
@@ -256,7 +256,7 @@ services:
       - ENV_FILE_PATH=/config/.env
       - BACKUP_DIR=/config/backups
     ports:
-      - 8100:8080
+      - {{ pi_health_dashboard_port_8100 }}:8080
     volumes:
       - /proc:/host_proc:ro
       - /sys:/host_sys:ro
@@ -267,7 +267,7 @@ services:
     restart: unless-stopped
 
   watchtower:
-    image: containrrr/watchtower:latest
+    image: {{ watchtower_image }}
     container_name: watchtower
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
